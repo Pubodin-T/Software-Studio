@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="test">Welcome to Software Studio Calculator</h1>
+    <div class="calc">
+        <form name="form">
+            <input class="calc-display" disabled="disabled">
+        </form>
+        <table>
+            <td><input type="button" value="7" onclick="insrt(7)"></td>
+            <td><input type="button" value="8" onclick="insrt(8)"></td>
+            <td><input type="button" value="9" onclick="insrt(9)"></td>
+            <td><input type="button" id="opera1" value="+" ></td>
+            
+        </table>
+        <table>
+            <td><input type="button" value="4" onclick="insrt(4)"></td>
+            <td><input type="button" value="5" onclick="insrt(5)"></td>
+            <td><input type="button" value="6" onclick="insrt(6)"></td>
+            <td><input type="button" id="opera2" value="-"  ></td>
+        </table>
+        <table>
+            <td><input type="button" value="1" onclick="insrt(1)"></td>
+            <td><input type="button" value="2" onclick="insrt(2)"></td>
+            <td><input type="button" value="3" onclick="insrt(3)"></td>
+            <td><input type="button" id="opera3" value="*" ></td>
+        </table>
+        <table>
+            <td><input type="button" value="." onclick="insrt('.')"></td>
+            <td><input type="button" value="0" onclick="insrt(0)"></td>
+            <td><input type="button" value="=" onclick="eql()"></td>
+            <td><input type="button" id="opera4" value="/" ></td>
+        </table>
+        <button type="button" onclick="c()">Clear</button>
+        <button type="button" onclick="del()">Delete</button>
+        <button type="button" onclick="inv()">+/-</button>
+    </div>    
+</div>
+
+@section Scripts {
+    <script>
+        var opera = '';
+        var input1 = '';
+        var input2 = '';
+        ["1","2","3","4"].forEach(key => {
+           const doc = document.querySelector("#opera" + key)
+           doc.addEventListener("click", (e) => {
+                opera = e.target.value;
+                if(input1 == ""){
+                    input1 = $('.calc-display').val();
+                    $('.calc-display').val('');
+                }
+                
+                console.log(input1);
+           })
+        })
+
+
+        function insrt(num) {
+	        $('.calc-display').val($('.calc-display').val() + num);
+        }
+        function c() {
+	        $('.calc-display').val('');
+            opera = '';
+            input1 = '';
+            input2 = '';
+        }
+        function del() {
+	        value = $('.calc-display').val();
+	        $('.calc-display').val(value.substring(0, value.length - 1));
+        }
+        function inv() {
+            value = $('.calc-display').val();
+            if(value[0]!="-"){
+                value= ("-")+ $('.calc-display').val();
+                $('.calc-display').val(value) ;
+            }
+            else{
+                value = value.substring(1);
+                $('.calc-display').val(value) ;
+                
+            }
+        }
+        function eql(){
+            input2 = $('.calc-display').val();
+            console.log(input2);
+            
+            $.ajax({
+                method:"GET",
+                url: "@Url.Action("Evaluate")",
+                data: { num1: input1, num2: input2, oper: opera },
+                success: function (result) {
+                    $('.calc-display').val(result);
+                    console.log(opera);
+                    console.log(result);
+                    input1="";
+                    input2="";
+                    
+                },
+                error: function(error){
+                    alert("Error please try again !");
+                    c();
+                }
+            })
+        }
+    
+    </script>
+}
